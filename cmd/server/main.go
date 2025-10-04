@@ -3,32 +3,38 @@ package main
 import (
 	"log"
 	"net/http"
-	_ "net/http/pprof"
+	_ "net/http/pprof" // подключение стандартного профилировщика pprof
 
-	"github.com/prometheus/client_golang/prometheus/promhttp"
-
-	"go-service-profiling/internal/handlers"
-	"go-service-profiling/internal/metrics"
+	"github.com/go-portfolio/go-service-profiling/internal/handlers" // пакет с HTTP-хендлерами
+	"github.com/go-portfolio/go-service-profiling/internal/metrics"  // пакет с метриками
+	"github.com/prometheus/client_golang/prometheus/promhttp"        // адаптер для экспорта метрик в Prometheus
 )
 
 func main() {
-	// Инициализация метрик
+	// Инициализация пользовательских метрик (счётчики, гистограммы и т.д.)
 	metrics.Init()
 
+	// Создаём новый маршрутизатор HTTP
 	mux := http.NewServeMux()
-	mux.HandleFunc("/", handlers.IndexHandler)
-	mux.HandleFunc("/work", handlers.WorkHandler)
-	mux.HandleFunc("/alloc", handlers.AllocHandler)
-	mux.HandleFunc("/sleep", handlers.SleepHandler)
 
-	// Метрики Prometheus
+	// Регистрируем обработчики (эндпоинты сервиса)
+	mux.HandleFunc("/", handlers.IndexHandler)   // корневая страница
+	mux.HandleFunc("/work", handlers.WorkHandler) // имитация нагрузки
+	mux.HandleFunc("/alloc", handlers.AllocHandler) // выделение памяти (тест профилировки)
+	mux.HandleFunc("/sleep", handlers.SleepHandler) // "усыпление" горутины (тест задержек)
+
+	// Подключаем метрики Prometheus по пути /metrics
 	mux.Handle("/metrics", promhttp.Handler())
 
-	// pprof уже подключён через import _ "net/http/pprof"
-	// доступно по /debug/pprof/
+	// Профилировщик pprof уже подключён выше через blank import,
+	// доступен по адресу /debug/pprof/
+	// Пример: http://localhost:8080/debug/pprof/
 
+	// Запускаем HTTP-сервер на порту 8080
 	addr := ":8080"
 	log.Printf("listening on %s", addr)
+
+	// Если сервер завершится с ошибкой — логируем фатально и выходим
 	if err := http.ListenAndServe(addr, mux); err != nil {
 		log.Fatalf("server failed: %v", err)
 	}

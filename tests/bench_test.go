@@ -4,7 +4,7 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"go-service-profiling/internal/handlers"
+	"github.com/go-portfolio/go-service-profiling/internal/handlers"
 )
 
 func BenchmarkWorkHandler(b *testing.B) {
