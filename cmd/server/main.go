@@ -25,7 +25,8 @@ func main() {
 
 	// Подключаем метрики Prometheus по пути /metrics
 	mux.Handle("/metrics", promhttp.Handler())
-
+	mux.Handle("/debug/pprof/", http.DefaultServeMux)
+	
 	// Профилировщик pprof уже подключён выше через blank import,
 	// доступен по адресу /debug/pprof/
 	// Пример: http://localhost:8080/debug/pprof/

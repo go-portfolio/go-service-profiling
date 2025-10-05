@@ -25,3 +25,15 @@ docker-build:
 	docker build -t go-service-profiling:latest .
 	# -t go-service-profiling:latest — тег образа
 	# . — контекст сборки (текущая папка)
+
+cpu-prof:
+	bash ./scripts/profile_cpu.sh
+
+heap-prof:
+	bash ./scripts/profile_mem.sh
+
+# Профилирование горутин
+goroutine-prof:
+	./scripts/profile-goroutine.sh
+
+
