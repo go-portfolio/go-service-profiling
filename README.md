@@ -110,6 +110,49 @@ go-service-profiling/
 go tool pprof -http=:8081 ./bin/service goroutine.prof
 
 
+## Снятие полезного CPU-профиля
+
+Чтобы получить информативный CPU-профиль в проекте `go-service-profiling`, нужно создать реальную нагрузку на процессор во время профилирования.  
+
+### Шаги
+
+1. **Запустить сервис**
+
+```bash
+./bin/service
+
+
+2. Создать нагрузку на CPU (в другом терминале):
+```bash
+curl http://localhost:8080/work
+# или несколько раз
+for i in {1..5}; do curl http://localhost:8080/work; done
+```
+Это вызовет хендлер WorkHandler, который запускает функцию CPUHeavy для имитации нагрузки.
+
+3. Снять CPU-профиль:
+```bash
+curl "http://localhost:8080/debug/pprof/profile?seconds=30" -o cpu.prof
+```
+Или через make-скрипт:
+```bash
+make cpu-prof
+```
+4. Открыть профиль для анализа
+```bash
+go tool pprof -http=:8081 ./bin/service cpu.prof
+```
+Откроется веб-интерфейс по адресу http://localhost:8081.
+
+В нём можно посмотреть:
+Flamegraph — функции, где тратится больше всего CPU.
+Call graph — как функции вызывают друг друга.
+Top — список «горячих» функций с временем выполнения.
+Source view — время по строкам исходного кода.
+
+⚠️ Важно: без вызова /work профиль будет пустым (Total samples = 0), потому что CPU не использовался.
+
+
 
 # План по улучшению проекта
 
