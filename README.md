@@ -122,7 +122,7 @@ go tool pprof -http=:8081 ./bin/service goroutine.prof
 ./bin/service
 
 
-2. Создать нагрузку на CPU (в другом терминале):
+2. Создать нагрузку на CPU (в другом терминале) одновременно с шагом 3:
 ```bash
 curl http://localhost:8080/work
 # или несколько раз
@@ -130,7 +130,7 @@ for i in {1..5}; do curl http://localhost:8080/work; done
 ```
 Это вызовет хендлер WorkHandler, который запускает функцию CPUHeavy для имитации нагрузки.
 
-3. Снять CPU-профиль:
+3. Снять CPU-профиль одновременно с шагом 2:
 ```bash
 curl "http://localhost:8080/debug/pprof/profile?seconds=30" -o cpu.prof
 ```
