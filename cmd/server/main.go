@@ -83,6 +83,24 @@ func main() {
 		w.Write([]byte("Trace finished, saved to trace.out\n"))
 	})
 
+	// ThreadCreate профайл
+	mux.HandleFunc("/debug/threadcreate", func(w http.ResponseWriter, r *http.Request) {
+		if err := profiling.WriteThreadCreateProfile("threadcreate.prof"); err != nil {
+			http.Error(w, "failed to write threadcreate profile", http.StatusInternalServerError)
+			return
+		}
+		w.Write([]byte("ThreadCreate profile saved to threadcreate.prof\n"))
+	})
+
+	// Mutex профайл
+	mux.HandleFunc("/debug/mutex", func(w http.ResponseWriter, r *http.Request) {
+		if err := profiling.WriteMutexProfile("mutex.prof"); err != nil {
+			http.Error(w, "failed to write mutex profile", http.StatusInternalServerError)
+			return
+		}
+		w.Write([]byte("Mutex profile saved to mutex.prof\n"))
+	})
+
 	// -----------------------------
 	// Запуск сервера
 	// -----------------------------
